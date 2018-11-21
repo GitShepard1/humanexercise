@@ -9,7 +9,12 @@ Description: R analysis packages for human exercise project
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-imports: 
+imports:
   tidyverse (>= 1.2.1),
-  magrittr (>= 1.5)
+  magrittr (>= 1.5),
+  rlist (>= 0.4.6.1),
+  accelerometry (>= 2.2.5),
+  convertagd (>= 0.1.1),
+  RSQLite (>= 2.1.1),
+  purrr (>= 0.2.5)
 RoxygenNote: 6.1.1

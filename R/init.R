@@ -29,6 +29,15 @@ init = function(home = getwd(),
   }
   print('LOADING COMPLETE ******************* NEW')
 
+  for(f in colnames(fields)){
+
+    msg = paste('LADING FIELDS FOR', f)
+    print(msg)
+
+  }
+
+
+
 
   # fills the exercise_db with data from './data
 

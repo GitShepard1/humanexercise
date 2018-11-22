@@ -95,7 +95,7 @@ john_the_fisherman = function(experiment1,
         dplyr::select(Subject, Gender, Exercise, variable, delta) %>%
         spread(variable, delta)
 
-    }
+      }
     },
 
     by = c('Subject', 'Gender', 'Exercise')

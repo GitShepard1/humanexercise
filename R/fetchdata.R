@@ -42,8 +42,8 @@ fetchdata = function(db = exercise_db,
 
       if (!is.null(e)){
 
-        xnat = paste0(dplyr::filter(dplyr::select(fields, 'cantabPAL'),
-                                    get('cantabPAL') != '') %>%
+        xnat = paste0(dplyr::filter(dplyr::select(fields, e),
+                                    get(e) != '') %>%
                         pull(),
                       collapse = ',')
 

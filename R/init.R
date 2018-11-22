@@ -19,6 +19,8 @@ init = function(home = getwd(),
   db_loc = file.path(home, 'exercise.sqlite')
   exercise_db <- DBI::dbConnect(RSQLite::SQLite(), 'exercise.sqlite')
 
+  xnatfields <<- read.csv('./data/xnatfields.csv')
+
   files = dir(datadir)
 
   print('LOADING FILES    *******************')

@@ -2,6 +2,6 @@
 
 export(fetchdata)
 export(init)
-export(process_accelerometry)
 import(DBI)
 import(tidyverse)
+import(tools)

@@ -13,6 +13,7 @@
 #' @import DBI
 #' @import stringr
 #' @import dplyr
+#' @import tibble
 #' @export fetchdata
 #' @examples \dontrun{
 #' hello()
@@ -27,31 +28,31 @@ setClass("human_exercise",
 
 fetchdata = function(db = exercise_db,
                      experiments,
-                     fields = NULL,
                      omit_subjects = '1014PJ',
                      selected_interval = NULL,
                      selected_fields = NULL,
                      exact_match = T,
                      include_age = F){
 
-
-
-
   parse_sql = function(input)  paste('(', paste0(input, collapse = ','), ')', sep='')
 
   dflist = experiments %>%
     map(function(e){
 
-      if (is.null(fields) & !is.null(e)){
+      if (!is.null(e)){
 
-        fields = paste0(fields[, e], collapse = ',')
+        xnat = paste0(dplyr::filter(dplyr::select(fields, 'cantabPAL'),
+                                    get('cantabPAL') != '') %>%
+                        pull(),
+                      collapse = ',')
 
-        fields = ifelse(str_detect(e, 'blood'), paste(fields,'prepost', sep=','), fields)
+        xnat = ifelse(str_detect(e, 'blood'), paste(xnat,'prepost', sep=','), xnat)
         xsi_type = e
+
 
       } else {
 
-        fields = fields
+        xnat = fields
         xsi_type = current_fields %>%
           filter(fieldname %in% fields) %>%
           distinct(xsitype) %>%
@@ -70,12 +71,13 @@ fetchdata = function(db = exercise_db,
       )
       query = paste(
 
-        "SELECT ", relabels, ",", fields, " FROM ", paste('opex_', e, sep=''),
+        "SELECT ", relabels, ",", xnat, " FROM ", paste('opex_', e, sep=''),
 
         sep = ' '
 
       )
 
+      print(query)
 
       # set age aside
 
@@ -106,7 +108,7 @@ fetchdata = function(db = exercise_db,
           }) %>%
           enframe() %>%
           dplyr::mutate(nrows = map(value, nrow)) %>%
-          unnest(nrows) %>%
+          tidyr::unnest(nrows) %>%
           arrange(desc(nrows)) %>%
           dplyr::select(value)
 
@@ -154,7 +156,7 @@ fetchdata = function(db = exercise_db,
     structure(names = experiments) %>%
     enframe() %>%
     dplyr::mutate(nrows = map(value, nrow)) %>%
-    unnest(nrows) %>%
+    tidyr::unnest(nrows) %>%
     arrange(desc(nrows))
 
   joining_fields = c('Subject', 'Gender', 'Exercise', 'interval')

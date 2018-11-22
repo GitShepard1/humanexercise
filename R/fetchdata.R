@@ -12,6 +12,7 @@
 #' @import purrr
 #' @import DBI
 #' @import stringr
+#' @import dplyr
 #' @export fetchdata
 #' @examples \dontrun{
 #' hello()

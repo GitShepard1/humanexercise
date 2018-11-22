@@ -3,6 +3,7 @@
 export(fetchdata)
 export(init)
 import(DBI)
+import(dplyr)
 import(purrr)
 import(stringr)
 import(tidyverse)

@@ -4,6 +4,7 @@
 #' @param
 #' @import tidyverse
 #' @import DBI
+#' @import tools
 #' @export init
 #' @examples \dontrun{
 #' hello()
@@ -16,7 +17,7 @@ init = function(home = getwd(),
 
   print(paste("INITALISING PROJECT:", home, '*********************'))
   db_loc = file.path(home, 'exercise.sqlite')
-  exercise_db <<- DBI::dbConnect(RSQLite::SQLite(), 'exercise.sqlite')
+  exercise_db <- DBI::dbConnect(RSQLite::SQLite(), 'exercise.sqlite')
 
   files = dir(datadir)
 

@@ -3,5 +3,6 @@
 export(fetchdata)
 export(init)
 import(DBI)
+import(purrr)
 import(tidyverse)
 import(tools)

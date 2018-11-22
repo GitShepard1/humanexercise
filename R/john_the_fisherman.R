@@ -15,8 +15,7 @@
 #' @import dplyr
 #' @import tibble
 #' @import tidyr
-#' @export delta_change
-#' @export reshape_delta_change
+#' @export john_the_fisherman
 #' @examples \dontrun{
 #' hello()
 #' }

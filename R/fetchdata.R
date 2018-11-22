@@ -14,6 +14,7 @@
 #' @import stringr
 #' @import dplyr
 #' @import tibble
+#' @import tidyr
 #' @export fetchdata
 #' @examples \dontrun{
 #' hello()

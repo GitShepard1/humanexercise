@@ -11,6 +11,8 @@
 #' @import dplyr
 #' @import tibble
 #' @import tidyr
+#' @export plot_group
+#' @export grid_scatter
 #' @export run_grids
 #' @examples \dontrun{
 #' hello()

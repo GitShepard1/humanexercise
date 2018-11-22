@@ -16,5 +16,6 @@ imports:
   accelerometry (>= 2.2.5),
   convertagd (>= 0.1.1),
   RSQLite (>= 2.1.1),
-  purrr (>= 0.2.5)
+  purrr (>= 0.2.5),
+  DBI (>= 1.0.0)
 RoxygenNote: 6.1.1

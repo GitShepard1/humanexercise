@@ -11,6 +11,7 @@
 #' @import tidyverse
 #' @import purrr
 #' @import DBI
+#' @import stringr
 #' @export fetchdata
 #' @examples \dontrun{
 #' hello()

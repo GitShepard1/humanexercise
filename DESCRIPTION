@@ -16,5 +16,6 @@ imports:
   convertagd (>= 0.1.1),
   RSQLite (>= 2.1.1),
   purrr (>= 0.2.5),
-  DBI (>= 1.0.0)
+  DBI (>= 1.0.0),
+  stringr (>= 1.3.1)
 RoxygenNote: 6.1.1

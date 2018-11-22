@@ -3,6 +3,7 @@
 export(delta_change)
 export(fetchdata)
 export(init)
+export(reshape_delta_change)
 import(DBI)
 import(dplyr)
 import(purrr)

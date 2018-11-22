@@ -13,6 +13,7 @@
 #' @import tibble
 #' @import tidyr
 #' @export delta_change
+#' @export reshape_delta_change
 #' @examples \dontrun{
 #' hello()
 #' }
@@ -61,3 +62,101 @@ delta_change = function(db_object,
 
 
 }
+
+
+reshape_delta_change = function(df){
+
+  data = df %>%
+    dplyr::select(Subject, Gender, Exercise, variable, delta) %>%
+    spread(variable, delta)
+
+  fields = dplyr::select(data, -Subject, -Gender, -Exercise) %>%
+    colnames
+
+  return_class = new('human_exercise',
+                     fields = fields,
+                     data = data
+  )
+
+  return(return_class)
+}
+
+dflist.merge = function(dflist, by){
+
+  (dflist %>%
+     enframe %>%
+     dplyr::mutate(srows = map(value, nrow)) %>%
+     unnest(srows) %>%
+     arrange(desc(srows)))$value %>%
+    reduce(left_join, by = by)
+
+}
+
+detect_duplicates = function(db_object){
+
+  dup_subject = db_object@data %>%
+    count(Subject, interval) %>%
+    filter(n > 1) %>%
+    dplyr::select(Subject, interval)
+
+  db_object@data %>%
+    filter(Subject %in% dup_subject$Subject, interval %in% dup_subject$interval)
+
+}
+
+check_blood_duplicates = function(){
+  tibble(bloods = c(
+    "opex_bloodCobasData",
+    "opex_bloodElisasData",
+    "opex_bloodIgfData",
+    "opex_bloodMultiplexData"
+  )) %>%
+    dplyr::mutate(duplicates = map(bloods, function(b){
+
+      tbl(exercise_db, sql(paste('SELECT * FROM', b, sep = ' '))) %>%
+        rename('Subject' = 'xnat_subjectdata_subject_label') %>%
+        group_by(Subject, interval, prepost) %>%
+        count %>%
+        filter(n > 1) %>%
+        arrange(Subject, interval) %>%
+        collect
+
+    })) %>%
+    unnest(duplicates)
+}
+
+select_element_list = function(list, element){
+
+  list[[element]]
+
+}
+
+lm_ext = function(df){
+
+  mod = tidy(lm('paltea~interval', data = df))
+  mod[, c('term','estimate')]
+
+}
+
+subject_traj = function(db_object){
+
+  db_object@data %>%
+    group_by(Subject) %>%
+    filter(interval > 0) %>%
+    dplyr::mutate(interval - 1) %>%
+    nest() %>%
+    dplyr::mutate(
+
+      lmmod = map(data, lm_ext)
+
+    ) %>%
+    unnest(lmmod) %>%
+    spread(term, estimate) %>%
+    left_join(
+      distinct(db_object@data, Subject, Exercise)
+
+    ) %>%
+    setNames(c('Subject', 'intercept', 'slope', 'Exercise'))
+
+}
+

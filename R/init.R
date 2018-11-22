@@ -18,17 +18,16 @@ init = function(home = getwd(),
   db_loc = file.path(home, 'exercise.sqlite')
   exercise_db <- DBI::dbConnect(RSQLite::SQLite(), 'exercise.sqlite')
 
-  files = dir(datadir)
 
   print('LOADING FILES    *******************')
-  lapply(dir(filedir)[file_ext(dir(filedir)) == "csv"], function(file) {
+  lapply(dir(datadir)[file_ext(dir(datadir)) == "csv"], function(f) {
 
     msg = paste('Loading', f)
     print(msg)
 
-    dbWriteTable(wk_db,
-                 name = file_path_sans_ext(file),
-                 value = read.csv(file.path(filedir, file)),
+    dbWriteTable(exercise_db,
+                 name = file_path_sans_ext(f),
+                 value = read.csv(file.path(datadir, f)),
                  row.names = F,
                  overwrite = T)
   })

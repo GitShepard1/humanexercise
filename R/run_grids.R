@@ -330,6 +330,9 @@ grid_scatter = function(xvar,
     abs(min(data[,yvar], na.rm = T)*1.1)
   )
 
+  print(xlims)
+  print(ylims)
+
   xannot = xlims/4
   yannot = ylims/4
 

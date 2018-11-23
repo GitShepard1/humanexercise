@@ -12,6 +12,7 @@
 #' @import tibble
 #' @import tidyr
 #' @import ggpubr
+#' @import ggplot2
 #' @export run_grids
 #' @examples \dontrun{
 #' hello()

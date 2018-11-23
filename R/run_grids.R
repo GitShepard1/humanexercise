@@ -11,6 +11,7 @@
 #' @import dplyr
 #' @import tibble
 #' @import tidyr
+#' @import ggpubr
 #' @export run_grids
 #' @examples \dontrun{
 #' hello()

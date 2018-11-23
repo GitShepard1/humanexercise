@@ -317,6 +317,7 @@ grid_scatter = function(xvar,
 
   }
 
+  print('stop ---------------------------')
 
   # computing limits based on maximums
   xlims = max(

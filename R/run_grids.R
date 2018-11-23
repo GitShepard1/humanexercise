@@ -13,6 +13,7 @@
 #' @import tidyr
 #' @import ggpubr
 #' @import ggplot2
+#' @import cowplot
 #' @export run_grids
 #' @examples \dontrun{
 #' hello()

@@ -18,6 +18,8 @@
 #' hello()
 #' }
 
+blood_expts = c("bloodMultiplexData","bloodCobasData","bloodElisasData", "bloodIgfData")
+
 hump_colours = c('1' = '#76c100', '6' = '#fc0f00')
 
 colors = list(
@@ -25,7 +27,6 @@ colors = list(
   'MIT' = c('#68B7FF', '#0037F6'),
   'LIT' = c('#D2FFBA', '#58F520')
 )
-
 
 group_parameters = list(
 
@@ -213,14 +214,14 @@ grid_scatter = function(xvar,
                         sel_interval=0,
                         height = 7,
                         width = 7,
-                        output_dir = outputdir,
+                        output_dir,
                         type = 'COGNITIVE'){
 
   if(type == 'COGNITIVE'){
 
     data = full_join(
       fetchdata(exercise_db,
-                experiments = cantab_expts[1])@data %>%
+                experiments = 'cantabPAL')@data %>%
         filter(interval %in% c(1,3,6)) %>%
         dplyr::mutate(interval = ifelse(interval == 1, 0, interval)),
 
@@ -260,7 +261,7 @@ grid_scatter = function(xvar,
         filter(interval %in% c(0,3,6)),
 
       (fetchdata(exercise_db,
-                 experiments = cantab_expts[1],
+                 experiments = 'cantabPAL',
                  omit_subjects = '1128LW'
       ) %>%
         delta_change(start = 1, end = 6) %>%
@@ -295,7 +296,7 @@ grid_scatter = function(xvar,
 
 
       (fetchdata(exercise_db,
-                 experiments = cantab_expts[1],
+                 experiments = 'cantabPAL',
                  omit_subjects = '1128LW'
       ) %>%
         delta_change(start = 1, end = 6) %>%

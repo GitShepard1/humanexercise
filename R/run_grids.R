@@ -27,6 +27,14 @@ colors = list(
   'LIT' = c('#D2FFBA', '#58F520')
 )
 
+group_colours = c(
+
+  'AIT' = "#E92323",
+  'MIT' = "#0037F6",
+  'LIT' = "#58F520"
+
+)
+
 group_parameters = list(
 
   'ALL' = list(

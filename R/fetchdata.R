@@ -40,6 +40,8 @@ fetchdata = function(db = exercise_db,
   dflist = experiments %>%
     map(function(e){
 
+      print(str_c('QUERYING EXPERIMENT:', e))
+
       if (!is.null(e)){
 
         xnat = paste0(dplyr::filter(dplyr::select(fields, e),
@@ -54,10 +56,7 @@ fetchdata = function(db = exercise_db,
       } else {
 
         xnat = fields
-        xsi_type = current_fields %>%
-          filter(fieldname %in% fields) %>%
-          distinct(xsitype) %>%
-          pull()
+        xsi_type = e
 
       }
 
@@ -77,8 +76,6 @@ fetchdata = function(db = exercise_db,
         sep = ' '
 
       )
-
-      print(query)
 
       # set age aside
 
@@ -118,26 +115,16 @@ fetchdata = function(db = exercise_db,
                  by = c('Subject', 'Gender', 'Exercise', 'interval'))
 
 
-        wk_fields = current_fields %>% filter(xsitype %in% e) %>% pull(fieldname)
+        wk_fields = dplyr::filter(dplyr::select(fields, e),
+                                         get(e) != '') %>% pull()
 
         for (f in wk_fields){
 
           wk_df[,paste(f, 'prepost', sep ='_')] = wk_df[,paste(f, 'post', sep='_')] - wk_df[,paste(f, 'pre', sep='_')]
-          wk_df[,paste(f, 'max', sep ='_')] = 0
-          wk_df[,paste(f, 'percent', sep ='_')] = 0
-
-          for (i in 1:nrow(wk_df)){
-
-            wk_df[i,paste(f, 'max', sep ='_')] = max(wk_df[i,paste(f, 'post', sep='_')], wk_df[i,paste(f, 'pre', sep='_')], na.rm=T)
-            wk_df[i,paste(f, 'percent', sep ='_')] = (wk_df[i,paste(f, 'post', sep='_')]-wk_df[i,paste(f, 'pre', sep='_')])/wk_df[i,paste(f, 'pre', sep='_')]*100
-
-            ifelse(wk_df[i,paste(f, 'percent', sep ='_')]==Inf, 0, wk_df[i,paste(f, 'percent', sep ='_')])
-
-          }
+          wk_df[,paste(f, 'max', sep ='_')] = apply(wk_df[,paste0(f, c('_pre','_post'))], 1, function(x) max(x))
+          wk_df[,paste(f, 'percent', sep ='_')] = (wk_df[,paste(f, 'post', sep='_')]-wk_df[,paste(f, 'pre', sep='_')])/wk_df[,paste(f, 'pre', sep='_')]*100
 
         }
-
-
 
 
       }

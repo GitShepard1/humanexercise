@@ -218,21 +218,23 @@ grid_scatter = function(xvar,
                         height = 7,
                         width = 7,
                         output_dir = outputdir,
-                        type = 'COGNITIVE'){
+                        xinterval = c(0,3,6),
+                        yinterval = c(1,3,6),
+                        type){
 
   if(type == 'COGNITIVE'){
 
     data = full_join(
       fetchdata(exercise_db,
                 experiments = yexperiment)@data %>%
-        filter(interval %in% c(1,3,6)) %>%
+        filter(interval %in% yinterval) %>%
         dplyr::mutate(interval = ifelse(interval == 1, 0, interval)),
 
       fetchdata(exercise_db,
                 experiments = xexperiment
                 # omit_subjects = c('1102RC', '1110MD')
       )@data %>%
-        filter(interval %in% c(0,3,6)),
+        filter(interval %in% xinterval),
 
       by = c('Subject', 'Exercise', 'interval', 'Gender')
 
@@ -251,9 +253,45 @@ grid_scatter = function(xvar,
           nest()
 
       ) %>%
+      bind_rows(
+
+
+        bind_rows(
+          full_join(
+            fetchdata(exercise_db,
+                      experiments = yexperiment)@data %>%
+              filter(interval %in% 6) %>%
+              dplyr::select(-interval),
+
+            fetchdata(exercise_db,
+                      experiments = xexperiment
+            )@data %>%
+              filter(interval %in% 0) %>%
+              dplyr::select(-interval)
+          ) %>%
+            nest() %>%
+            dplyr::mutate(Exercise = 'ALL') %>%
+            dplyr::mutate(interval = 16),
+
+          full_join(
+            fetchdata(exercise_db,
+                      experiments = yexperiment)@data %>%
+              filter(interval %in% 6) %>%
+              dplyr::select(-interval),
+
+            fetchdata(exercise_db,
+                      experiments = xexperiment
+            )@data %>%
+              filter(interval %in% 0) %>%
+              dplyr::select(-interval)
+          ) %>%
+            dplyr::mutate(interval = 16) %>%
+            group_by(Exercise, interval) %>%
+            nest()
+          )
+
+      ) %>%
       filter(interval == sel_interval)
-
-
 
 
   } else if(type == 'LEARNING'){
@@ -264,7 +302,7 @@ grid_scatter = function(xvar,
                 experiments = xexperiment
                 # omit_subjects = c('1102RC', '1110MD')
       )@data %>%
-        filter(interval %in% c(0,3,6)),
+        filter(interval %in% xinterval),
 
       (fetchdata(exercise_db,
                  experiments = yexperiment,
@@ -288,6 +326,9 @@ grid_scatter = function(xvar,
 
       ) %>%
       filter(interval == sel_interval)
+
+
+
 
   } else if(type == 'CHANGE'){
 
@@ -322,13 +363,7 @@ grid_scatter = function(xvar,
 
       )
 
-
-
-
-
   }
-  print(data)
-  print('stop ---------------------------')
 
   # computing limits based on maximums
   xlims = max(
@@ -341,11 +376,8 @@ grid_scatter = function(xvar,
     abs(min(data[,yvar], na.rm = T)*1.1)
   )
 
-  print(xlims)
-  print(ylims)
 
-  xannot = xlims/4
-  yannot = ylims/4
+  xannot = xlims/4; yannot = ylims/4
 
   bloodtype = str_split(xvar,'_')[[1]][1]
 
@@ -353,8 +385,10 @@ grid_scatter = function(xvar,
 
     xheader = str_c(xvar,
                     ' at ',
-                    sel_interval,
+                    ifelse(sel_interval != 16, sel_interval, 0),
                     ' Month')
+
+
     fname = str_c(type,'-',xvar,'_', yvar, '_at_', sel_interval, '.png')
 
 
@@ -364,7 +398,7 @@ grid_scatter = function(xvar,
       xheader = str_c(xvar,
                       '(%)',
                       ' at ',
-                      sel_interval,
+                      ifelse(sel_interval != 16, sel_interval, 0),
                       ' Month')
 
     } else if(str_detect(xvar, 'prepost')) {
@@ -399,7 +433,7 @@ grid_scatter = function(xvar,
 
   if(type == 'COGNITIVE'){
 
-    yheader = str_c(yvar, ' at ', sel_interval, ' Month')
+    yheader = str_c(yvar, ' at ', ifelse(sel_interval != 16, sel_interval, 6), ' Month')
     ylimit = c(0, ylims)
 
     if (sel_interval == 0 ){
@@ -415,7 +449,7 @@ grid_scatter = function(xvar,
     ylimit = c(-1*ylims, ylims)
 
   }
-
+  print(data_pk)
   p = data_pk %>%
     dplyr::mutate(
 
@@ -509,8 +543,16 @@ run_grids = function(xvar,
 
   blood_types = c('pre','post', 'prepost', 'max')
 
+  xplaceholder = xvar
+
   if(str_detect(xexperiment, 'blood')) xvar = str_c(xvar,'_',blood_types)
   if(str_detect(yexperiment, 'blood')) yvar = str_c(xvar,'_',blood_types)
+
+  print('GENERATING PLOTS')
+
+  if(type == 'COGNITIVE') int = c(0,3,6,16)
+  else if(type == 'LEARNING') int = c(0,3,6)
+  else if(type == 'CHANGE') int = 0
 
 
   p = expand.grid(
@@ -518,7 +560,7 @@ run_grids = function(xvar,
     y = yvar,
     xexp = xexperiment,
     yexp = yexperiment,
-    i = c(0,3,6),
+    i = int,
     t = type
   ) %>%
     as.tibble() %>%
@@ -534,12 +576,12 @@ run_grids = function(xvar,
       run = pmap(
         list(x, y, xexp, yexp, i, t),
 
-        .f = try(grid_scatter)
-        # x = x,
-        # y = y,
-        # xexperiment = xexp,
-        # yexperiment = yexp,
-        # type = t
+        .f = function(x, y, xexp, yexp, i, t) grid_scatter(xvar=x,
+                                                        yvar=y,
+                                                        sel_interval=i,
+                                                        xexperiment = xexp,
+                                                        yexperiment = yexp,
+                                                        type = t)
 
       ),
 
@@ -553,9 +595,9 @@ run_grids = function(xvar,
 
             str_c(t,'-', x,'_',y , '.png')
 
-          } else{
+          } else {
 
-            str_c(t,'-', x,'_', y, '_',i,'.png')
+            str_c(t,'-', x,'_', y, '_',ifelse(i!=16,i,'0-6predict'),'.png')
 
           }
         }
@@ -564,7 +606,12 @@ run_grids = function(xvar,
     ) %>%
     unnest(paths)
 
-  savedir = file.path(rootdir,xvar)
+
+  p$run
+
+
+  savedir = file.path(rootdir,xplaceholder)
+  print(paste('saving:', savedir))
   if(!dir.exists(savedir)) dir.create(savedir)
 
   pwalk(list(p$paths, p$run), ggsave, path = savedir)

@@ -255,7 +255,6 @@ grid_scatter = function(xvar,
       ) %>%
       bind_rows(
 
-
         bind_rows(
           full_join(
             fetchdata(exercise_db,

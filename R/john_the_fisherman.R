@@ -15,6 +15,7 @@
 #' @import dplyr
 #' @import tibble
 #' @import tidyr
+#' @import Hmisc
 #' @export john_the_fisherman
 #' @examples \dontrun{
 #' hello()

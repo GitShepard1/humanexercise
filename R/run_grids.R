@@ -333,10 +333,11 @@ grid_scatter = function(xvar,
   } else if(type == 'CHANGE'){
 
 
+    print(xexperiment)
     data = full_join(
 
       (fetchdata(exercise_db,
-                 experiments = yexperiment
+                 experiments = xexperiment
                  # omit_subjects = c('1102RC', '1110MD')
       ) %>%
         delta_change(start = 0, end = 6) %>%
@@ -344,7 +345,7 @@ grid_scatter = function(xvar,
 
 
       (fetchdata(exercise_db,
-                 experiments = xexperiment,
+                 experiments = yexperiment,
                  omit_subjects = '1128LW'
       ) %>%
         delta_change(start = 1, end = 6) %>%

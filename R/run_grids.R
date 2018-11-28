@@ -187,8 +187,11 @@ plot_group = function(ex, df, xvar, yvar, xlimit=c(0,110), ylimit=c(0,50), annot
               conf.int = F,
               cor.coef = TRUE,
               cor.coeff.args = list(method = "pearson",
-                                    label.x = annotx,
-                                    label.y = annoty),
+                                    # label.x.npc = "left",
+                                    label.y.npc = "bottom",
+                                    label.x = -Inf
+                                    # label.y = annoty
+                                    ),
               # ylim = NA,
               # xlim = NA
               ylim = ylimit,
@@ -613,6 +616,8 @@ run_grids = function(xvar,
   savedir = file.path(rootdir,xplaceholder)
   print(paste('saving:', savedir))
   if(!dir.exists(savedir)) dir.create(savedir)
+
+  print(p$paths)
 
   pwalk(list(p$paths, p$run), ggsave, path = savedir)
 

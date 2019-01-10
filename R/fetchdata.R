@@ -33,7 +33,10 @@ fetchdata = function(db = exercise_db,
                      selected_interval = NULL,
                      selected_fields = NULL,
                      exact_match = T,
-                     include_age = F){
+                     include_age = F,
+                     proj = 'P1'){
+
+  DBI::dbConnect(exercise_db)
 
   parse_sql = function(input)  paste('(', paste0(input, collapse = ','), ')', sep='')
 
@@ -72,13 +75,14 @@ fetchdata = function(db = exercise_db,
       query = paste(
 
         "SELECT ", relabels, ",", xnat, " FROM ", paste('opex_', e, sep=''),
+        str_c(' WHERE project="',proj,'"'),
 
         sep = ' '
 
       )
+      print(query)
 
       # set age aside
-
       age_df = tbl(exercise_db, sql(query)) %>%
         dplyr::select(Subject, Exercise, interval, Gender, age) %>%
         collect()
@@ -163,9 +167,9 @@ fetchdata = function(db = exercise_db,
     {if(!is.null(selected_fields))
 
       if(exact_match == F)
-        select(., joining_fields, matches(matchExpression))
+        dplyr::select(., joining_fields, matches(matchExpression))
       else
-        select(.,joining_fields, selected_fields)
+        dplyr::select(.,joining_fields, selected_fields)
 
       else . }
 
@@ -174,9 +178,13 @@ fetchdata = function(db = exercise_db,
 
   return_class = new('human_exercise',
                      fields = fields,
-                     data = data
+                     data = data %>% {if('project' %in% colnames(data)) dplyr::select(., -project) else .}
   )
 
   return(return_class)
 
+  DBI::dbDisconnect(exercise_db)
+
 }
+
+
